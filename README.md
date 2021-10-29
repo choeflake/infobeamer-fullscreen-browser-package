@@ -7,8 +7,16 @@ the `Authorization` header.
 
 ## Installation
 
-Go to the Github releases page of this repository and copy the link of the ZIP download.
+The installation is not straight forward. The repository contains a large file `overlay.squarefs`. This file it to large for Github as 'normal' git file. Therefore Git LFS is used. But Infobeamer does not support Git LFS.
+Another approach is the release feature of Github. But the release feature embeds the project name as root folder into the zip, which is not supported by Infobeamer.
 
+Checkout this repository and create a zip of the contents.
+*Note* that the zip must contain the 
+'hidden' directory .sv and no root folder.
+
+Example command: ``zip -r ./ PATH_TO_ZIP_FILE``.
+
+You need to host the zip somewhere and get the download url.
 Now Import a new Package into Infobeamer by using the `Add Package` button and select `Create from Url...`.
 
 # Git LFS
