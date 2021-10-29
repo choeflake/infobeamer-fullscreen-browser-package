@@ -1,8 +1,8 @@
 {
-    "name": "Fullscreen Browser",
+    "name": "Fullscreen Browser+",
     "author": "info-beamer.com",
-    "version": "86",
-    "desc": "Chromium Browser packaged as an info-beamer hosted 'service'",
+    "version": "86.plus",
+    "desc": "Chromium Browser packaged as an info-beamer hosted 'service'. With support for custom request headers.",
     "runtime": {
         "transparent": true
     },

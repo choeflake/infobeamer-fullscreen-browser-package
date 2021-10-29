@@ -5,6 +5,12 @@ thanks for the great work!
 This version is mentioned to support HTTP request headers. For example 
 the `Authorization` header.
 
+[![Import](https://cdn.infobeamer.com/s/img/import.png)](https://info-beamer.com/use?url=https://github.com/choeflake/infobeamer-fullscreen-browser-package.git)
+
+# Git LFS
+
+This repository uses Git LFS for the large filesystem overlay. See https://docs.github.com/en/repositories/working-with-files/managing-large-files/configuring-git-large-file-storage.
+
 # Experimental browser for info-beamer hosted
 
 This package allows you to show webpages in a constant rotation.

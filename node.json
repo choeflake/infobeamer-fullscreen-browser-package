@@ -54,6 +54,24 @@
         "title": "Advanced settings",
         "type": "section"
     }, {
+        "title": "Which headers do you want to add?",
+        "name": "headers",
+        "type": "list",
+        "itemname": "Header",
+        "items": [{
+            "title": "Header",
+            "ui_width": 3,
+            "name": "name",
+            "type": "string",
+            "default": ""
+        }, {
+            "title": "Value",
+            "ui_width": 9,
+            "name": "value",
+            "type": "string",
+            "default": ""
+        }]
+    }, {
         "title": "Time Zone",
         "ui_width": 6,
         "name": "timezone",

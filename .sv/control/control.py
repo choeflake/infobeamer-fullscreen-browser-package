@@ -80,6 +80,7 @@ class Tab(object):
         if not self._socket_url:
             # Might be empty in /json/list
             self._socket_url = page['webSocketDebuggerUrl']
+        # For rpc information, see https://chromedevtools.github.io/devtools-protocol/
         self.ensure_connected()
 
     def ensure_connected(self):
@@ -93,6 +94,7 @@ class Tab(object):
             return
         log("websocket connected")
         self._eventloop.register(self._fd, self.receive_rpc)
+        self.call_rpc("Network.enable")
         self.call_rpc("Page.enable")
         self.call_rpc("Runtime.enable")
         self.call_rpc("DOM.enable")
@@ -190,10 +192,12 @@ class Tab(object):
             traceback.print_exc()
             self.reset_connection()
 
-    def navigate(self, url, scripts):
+    def navigate(self, url, scripts, headers):
         self._loaded = False
         self._frames = {}
         self._scripts = scripts
+        self._headers = headers
+        self.call_rpc("Network.setExtraHTTPHeaders", headers=headers)
         self.call_rpc("Page.navigate", url=url)
 
 class Browser(object):
@@ -229,10 +233,10 @@ class Browser(object):
         self._tab_by_id[id]= Tab(self._eventloop, page)
         self._tabs.append(id)
 
-    def navigate(self, idx, url, script):
+    def navigate(self, idx, url, script, headers):
         id = self.tabs[idx]
-        log("=== Navigate %s -> %s" % (id, url))
-        self._tab_by_id[id].navigate(url, script)
+        log("=== Navigate %s -> %s (headers: %s)" % (id, url, headers))
+        self._tab_by_id[id].navigate(url, script, headers)
 
     def switch_to(self, idx):
         id = self.tabs[idx]
@@ -319,10 +323,16 @@ class Configuration(object):
             with open(os.path.join(self._prefix, config['scripts']['asset_name'])) as s:
                 scripts = Scripts(json.load(s))
 
+            headers = {}
+            _headers = config['headers']
+            if _headers:
+                for item in _headers:
+                    headers[item['name']] = item['value']
+
             urls = config['urls']
             if urls:
                 self._urls = cycle([
-                    (item['duration'], item['url'], scripts)
+                    (item['duration'], item['url'], scripts, headers)
                     for item in urls
                     if item['duration'] > 0
                 ]).next
@@ -378,11 +388,11 @@ class Control(object):
         return fixed
 
     def preload_next(self):
-        self._next_duration, url, scripts = self._config.next_item()
+        self._next_duration, url, scripts, headers = self._config.next_item()
         log("[browser-control] Loading %s in tab 1: next switch %d (in %ds)" % (
             url, self._next_switch, self._next_switch - time.time()
         ))
-        self._browser.navigate(1, url, scripts)
+        self._browser.navigate(1, url, scripts, headers)
         self._preloading = True
 
     def tick(self):
@@ -417,7 +427,7 @@ class Control(object):
             send_ib('root/fade:1')
             self._next_switch = now + self._next_duration
             self._preloading = False
-            self._browser.navigate(1, 'about:blank', Scripts([]))
+            self._browser.navigate(1, 'about:blank', Scripts([]), {})
 
 config_json = os.path.join(os.environ['NODE_PATH'], 'config.json')
 if len(sys.argv) == 2:
