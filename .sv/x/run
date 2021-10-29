@@ -1,0 +1,3 @@
+#!/bin/sh
+python mkxconf.py
+exec X :0 -s 0 -dpms -nolock -nocursor -logfile /dev/stdout -config xorg.conf

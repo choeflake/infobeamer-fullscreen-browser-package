@@ -1,0 +1,15 @@
+#!/usr/bin/python
+import json, os
+
+with open(os.path.join(os.environ['NODE_PATH'], 'config.json')) as f:
+    config = json.load(f)
+
+for n, cert in enumerate(config['certificates']):
+    pem = cert['certificate']
+    with open("/tmp/import.pem", "wb") as f:
+        f.write(pem)
+
+    # add to cert store
+    os.system("certutil -d sql:%s/.pki/nssdb -A -t 'CP,CP,' -n '%s' -i '%s'" % (
+        os.environ['HOME'], 'certificate #%d' % n, '/tmp/import.pem'
+    ))

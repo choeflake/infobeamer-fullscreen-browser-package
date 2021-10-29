@@ -1,0 +1,30 @@
+#!/usr/bin/python
+import subprocess, os, sys, time
+
+was_off, off = False, False
+while 1:
+    time.sleep(1)
+
+    status = subprocess.check_output(["tvservice", "-s"])
+    was_off, off = off, 'TV is off' in status
+
+    print >>sys.stderr, "[browser-power] TV off %s" % (off,)
+    if was_off == off:
+        continue
+
+    if off:
+        print >>sys.stderr, "[browser-power] TV turned off"
+        os.system("sv dk ../ratpoison")
+        os.system("sv dk ../control")
+        os.system("sv dk ../chromium")
+        os.system("sv dk ../cursor")
+        os.system("sv dk ../x")
+    else:
+        print >>sys.stderr, "[browser-power] TV is back on. restarting X/control"
+        time.sleep(3)
+        os.system("sv u ../x")
+        time.sleep(3)
+        os.system("sv u ../ratpoison")
+        os.system("sv u ../cursor")
+        os.system("sv u ../chromium")
+        os.system("sv u ../control")

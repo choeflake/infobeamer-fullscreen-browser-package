@@ -1,0 +1,62 @@
+#!/bin/sh
+export DISPLAY=:0
+export GSETTINGS_SCHEMA_DIR=/usr/share/gconf/schemas/
+export XDG_DATA_DIRS=/usr/share/gconf/schemas/
+
+# decide where to store the browser profile
+if jq .persistent $NODE_PATH/config.json -e > /dev/null; then
+    HOME=$SCRATCH/home-v1
+else
+    HOME=/tmp/chromium
+    rm -rf $HOME
+fi
+
+# setup timezone
+export TZ=":$(jq  .timezone $NODE_PATH/config.json -r)"
+
+# setup home
+mkdir -p $HOME
+chown $USER $HOME
+export HOME
+
+# prepare custom certificates
+rm -rf $HOME/.pki/nssdb
+mkdir -p $HOME/.pki/nssdb
+certutil -d sql:$HOME/.pki/nssdb -N --empty-password
+./install-certs
+certutil -d sql:$HOME/.pki/nssdb -L
+chown -R $USER $HOME/.pki/nssdb
+
+EXTRA_ARGS=""
+if jq .no_cert_check $NODE_PATH/config.json -e > /dev/null; then
+    EXTRA_ARGS="$EXTRA_ARGS --ignore-certificate-errors"
+fi
+
+# Prevent "crashed, want to restore" message. There doesn't
+# seem to be a proper way of doing that :(
+if [ -e $HOME/.config/chromium/Default/Preferences ]; then
+    sed -i 's/"exit_type":"Crashed"/"exit_type":"Normal"/' $HOME/.config/chromium/Default/Preferences
+fi
+
+# https://ryantkelly.github.io/rpi-tv
+exec chpst -u $USER chromium-browser \
+    --verbose \
+    --no-touch-pinch \
+    --kiosk \
+    --disable-gpu \
+    --remote-debugging-port=9222 \
+    --disable-infobars \
+    --disable-ntp-popular-sites \
+    --disable-speech-api \
+    --disable-sync \
+    --disable-translate \
+    --no-default-browser-check \
+    --noerrdialogs \
+    --safebrowsing-disable-auto-update \
+    --disable-extensions \
+    --disable-notifications \
+    $EXTRA_ARGS \
+    about:blank
+
+# --no-sandbox
+# --no-first-run (disable /usr/lib/chromium-browser/master_preferences)

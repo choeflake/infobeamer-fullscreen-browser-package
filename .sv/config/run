@@ -1,0 +1,19 @@
+#!/usr/bin/python
+import json, os, time
+
+config_json = os.path.join(os.environ['NODE_PATH'], 'config.json')
+last_config = None
+while 1:
+    time.sleep(3)
+    with open(config_json) as f:
+        config = json.load(f)
+    # remove parts that are irrelevant for a restart decision
+    del config['__metadata']
+    del config['urls']
+    if last_config is None:
+        last_config = config
+        continue
+
+    # Any change? Restart all
+    if last_config != config:
+        os.system("pkill -9 runsvdir")
