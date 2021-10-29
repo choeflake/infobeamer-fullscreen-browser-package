@@ -1,3 +1,10 @@
+# Pre-note
+
+I Downloaded the source from https://cdn.infobeamer.com/bulk/browser.zip, 
+thanks for the great work!
+This version is mentioned to support HTTP request headers. For example 
+the `Authorization` header.
+
 # Experimental browser for info-beamer hosted
 
 This package allows you to show webpages in a constant rotation.
