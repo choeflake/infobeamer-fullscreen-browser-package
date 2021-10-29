@@ -5,7 +5,11 @@ thanks for the great work!
 This version is mentioned to support HTTP request headers. For example 
 the `Authorization` header.
 
-[![Import](https://cdn.infobeamer.com/s/img/import.png)](https://info-beamer.com/use?url=https://github.com/choeflake/infobeamer-fullscreen-browser-package.git)
+## Installation
+
+Go to the Github releases page of this repository and copy the link of the ZIP download.
+
+Now Import a new Package into Infobeamer by using the `Add Package` button and select `Create from Url...`.
 
 # Git LFS
 
